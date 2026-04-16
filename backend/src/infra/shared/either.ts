@@ -1,50 +1,50 @@
-export type Left<T> = {
-  left: T
-  right?: never
+export type Failure<T> = {
+  failure: T
+  success?: never
 }
 
-export type Right<U> = {
-  left?: never
-  right: U
+export type Success<U> = {
+  failure?: never
+  success: U
 }
 
-export type Either<T, U> = NonNullable<Left<T> | Right<U>>
+export type Either<T, U> = NonNullable<Failure<T> | Success<U>>
 
 export type UnwrapEither = <T, U>(e: Either<T, U>) => NonNullable<T | U>
 
-export const isLeft = <T, U>(e: Either<T, U>): e is Left<T> => {
-  return e.left !== undefined
+export const isFailure = <T, U>(e: Either<T, U>): e is Failure<T> => {
+  return e.failure !== undefined
 }
 
-export const isRight = <T, U>(e: Either<T, U>): e is Right<U> => {
-  return e.right !== undefined
+export const isSuccess = <T, U>(e: Either<T, U>): e is Success<U> => {
+  return e.success !== undefined
 }
 
 export const unwrapEither: UnwrapEither = <T, U>({
-  left,
-  right,
+  failure,
+  success,
 }: Either<T, U>) => {
-  if (right !== undefined && left !== undefined) {
+  if (success !== undefined && failure !== undefined) {
     throw new Error(
-      `Received both left and right values at runtime when opening an Either\nLeft: ${JSON.stringify(
-        left
-      )}\nRight: ${JSON.stringify(right)}`
+      `Received both failure and success values at runtime when opening an Either\nFailure: ${JSON.stringify(
+        failure
+      )}\nSuccess: ${JSON.stringify(success)}`
     )
   }
 
-  if (left !== undefined) {
-    return left as NonNullable<T>
+  if (failure !== undefined) {
+    return failure as NonNullable<T>
   }
 
-  if (right !== undefined) {
-    return right as NonNullable<U>
+  if (success !== undefined) {
+    return success as NonNullable<U>
   }
 
   throw new Error(
-    'Received no left or right values at runtime when opening Either'
+    'Received no failure or success values at runtime when opening Either'
   )
 }
 
-export const makeLeft = <T>(value: T): Left<T> => ({ left: value })
+export const makeFailure = <T>(value: T): Failure<T> => ({ failure: value })
 
-export const makeRight = <U>(value: U): Right<U> => ({ right: value })
+export const makeSuccess = <U>(value: U): Success<U> => ({ success: value })
