@@ -1,6 +1,6 @@
 import { integer, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
 
-export const links = pgTable("links", {
+export const link = pgTable("links", {
   id: serial("id").primaryKey(),
   originalURL: text("originalURL").notNull(),
   shortenedURL: text("shortenedURL").notNull().unique(),

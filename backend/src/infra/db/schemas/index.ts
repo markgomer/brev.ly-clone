@@ -1,6 +1,6 @@
-import { links } from "./links";
+import { link } from "./links";
 
 export const schema = {
-  links,
+  link,
 }
 
