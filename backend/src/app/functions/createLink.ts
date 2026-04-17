@@ -7,19 +7,18 @@ import { makeSuccess } from "@/infra/shared/either";
 type CreateLinkInput = z.input<typeof createLinkInput>
 
 const createLinkInput = z.object({
-  originalLink: z.string(),
-  shortenedLink: z.string(),
+   originalLink: z.string(),
+   shortenedLink: z.string(),
 })
 
-export async function createLink(input: CreateLinkInput)
-{
-  const { originalLink, shortenedLink } = createLinkInput.parse(input)
+export async function createLink(input: CreateLinkInput) {
+   const { originalLink, shortenedLink } = createLinkInput.parse(input)
 
-  await db.insert(schema.link).values({
-    originalURL: originalLink,
-    shortenedURL: shortenedLink,
-  })
+   await db.insert(schema.link).values({
+      originalURL: originalLink,
+      shortenedURL: shortenedLink,
+   })
 
-  return makeSuccess({ shortenedLink })
+   return makeSuccess({ shortenedLink })
 }
 
