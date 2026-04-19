@@ -7,8 +7,8 @@ import { makeSuccess } from "@/infra/shared/either";
 type CreateLinkInput = z.input<typeof createLinkInput>
 
 const createLinkInput = z.object({
-   originalLink: z.string(),
-   shortenedLink: z.string(),
+   originalLink: z.url(),
+   shortenedLink: z.url(),
 })
 
 export async function createLink(input: CreateLinkInput) {
@@ -19,6 +19,6 @@ export async function createLink(input: CreateLinkInput) {
       shortenedURL: shortenedLink,
    })
 
-   return makeSuccess({ shortenedLink })
+   return makeSuccess({ url: shortenedLink })
 }
 
