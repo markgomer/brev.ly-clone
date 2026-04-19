@@ -1,5 +1,5 @@
 {
-  "id": "ee32510f-5a13-401e-82b9-4e4241cd6bca",
+  "id": "68f19190-6bee-4a6d-ae85-d99740d63491",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -14,20 +14,20 @@
           "primaryKey": true,
           "notNull": true
         },
-        "originalURL": {
-          "name": "originalURL",
+        "original_url": {
+          "name": "original_url",
           "type": "text",
           "primaryKey": false,
           "notNull": true
         },
-        "shortenedURL": {
-          "name": "shortenedURL",
+        "shortened_url": {
+          "name": "shortened_url",
           "type": "text",
           "primaryKey": false,
           "notNull": true
         },
-        "numberOfAccesses": {
-          "name": "numberOfAccesses",
+        "number_of_accesses": {
+          "name": "number_of_accesses",
           "type": "integer",
           "primaryKey": false,
           "notNull": true,
@@ -45,11 +45,11 @@
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "links_shortenedURL_unique": {
-          "name": "links_shortenedURL_unique",
+        "links_shortened_url_unique": {
+          "name": "links_shortened_url_unique",
           "nullsNotDistinct": false,
           "columns": [
-            "shortenedURL"
+            "shortened_url"
           ]
         }
       },

@@ -14,7 +14,7 @@ const createLinkInput = z.object({
 export async function createLink(input: CreateLinkInput) {
    const { originalLink, shortenedLink } = createLinkInput.parse(input)
 
-   await db.insert(schema.link).values({
+   await db.insert(schema.linksTable).values({
       originalURL: originalLink,
       shortenedURL: shortenedLink,
    })

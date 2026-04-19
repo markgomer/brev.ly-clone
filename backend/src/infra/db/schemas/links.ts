@@ -1,10 +1,10 @@
 import { integer, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
 
-export const link = pgTable("links", {
+export const linksTable = pgTable("links", {
    id: serial("id").primaryKey(),
-   originalURL: text("originalURL").notNull(),
-   shortenedURL: text("shortenedURL").notNull().unique(),
-   numberOfAccesses: integer("numberOfAccesses").default(0).notNull(),
+   originalURL: text("original_url").notNull(),
+   shortenedURL: text("shortened_url").notNull().unique(),
+   numberOfAccesses: integer("number_of_accesses").default(0).notNull(),
    createdAt: timestamp("created_at").defaultNow().notNull(),
 })
 
