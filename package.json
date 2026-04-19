@@ -4,7 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "cd frontend && bun dev && cd ../backend && bun dev",
+    "backend": "pushd backend && bun dev && popd",
+    "frontend": "pushd frontend && bun dev && popd",
     "start": "NODE_ENV=production bun frontend/src/index.ts && bun backend/src/server.ts"
   },
 }
