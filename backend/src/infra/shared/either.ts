@@ -26,9 +26,7 @@ export const unwrapEither: UnwrapEither = <T, U>({
 }: Either<T, U>) => {
    if (success !== undefined && failure !== undefined) {
       throw new Error(
-         `Received both failure and success values at runtime when opening an Either\nFailure: ${JSON.stringify(
-            failure
-         )}\nSuccess: ${JSON.stringify(success)}`
+         `Received both failure and success values at runtime when opening an Either\nFailure: ${JSON.stringify(failure)}\nSuccess: ${JSON.stringify(success)}`
       )
    }
 
