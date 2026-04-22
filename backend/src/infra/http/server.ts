@@ -7,9 +7,10 @@ import {
    validatorCompiler,
    hasZodFastifySchemaValidationErrors,
 } from "fastify-type-provider-zod"
+
 import { env } from "@/env"
 import { createLinkRoute } from "@/infra/http/routes/createLinkRoute"
-import { getLinksRoute } from "@/infra/http/routes/getLinksRoute"
+import { deleteLinkRoute } from "@/infra/http/routes/deleteLinkRoute"
 
 const server = fastify()
 
@@ -47,8 +48,7 @@ server.register(fastifySwaggerUi, {
 })
 
 server.register(createLinkRoute)
-
-server.register(getLinksRoute)
+server.register(deleteLinkRoute)
 
 console.log(env.DATABASE_URL)
 

@@ -7,4 +7,3 @@ export const linksTable = pgTable("links", {
    numberOfAccesses: integer("number_of_accesses").default(0).notNull(),
    createdAt: timestamp("created_at").defaultNow().notNull(),
 })
-
