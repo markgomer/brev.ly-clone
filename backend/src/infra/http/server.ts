@@ -13,6 +13,7 @@ import { createLinkRoute } from "@/infra/http/routes/createLinkRoute"
 import { deleteLinkRoute } from "@/infra/http/routes/deleteLinkRoute"
 import { getLinkRoute } from "./routes/getLinkRoute"
 import { listAllLinksRoute } from "@/infra/http/routes/listAllLinksRoute"
+import { exportLinksToCSVRoute } from "@/infra/http/routes/exportLinksRoute"
 
 const server = fastify()
 
@@ -22,7 +23,7 @@ server.setSerializerCompiler(serializerCompiler)
 
 server.register(fastifyCors, { origin: '*' })
 
-server.setErrorHandler((error, request, reply) => {
+server.setErrorHandler((error, _, reply) => {
    if (hasZodFastifySchemaValidationErrors(error)) {
       return reply.status(400).send({
          message: "Validation Error",
@@ -53,6 +54,7 @@ server.register(createLinkRoute)
 server.register(deleteLinkRoute)
 server.register(getLinkRoute)
 server.register(listAllLinksRoute)
+server.register(exportLinksToCSVRoute)
 
 console.log(env.DATABASE_URL)
 
