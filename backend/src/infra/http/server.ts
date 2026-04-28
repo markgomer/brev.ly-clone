@@ -11,7 +11,8 @@ import {
 import { env } from "@/env"
 import { createLinkRoute } from "@/infra/http/routes/createLinkRoute"
 import { deleteLinkRoute } from "@/infra/http/routes/deleteLinkRoute"
-import { getLinksRoute } from "./routes/getLinksRoute"
+import { getLinkRoute } from "./routes/getLinkRoute"
+import { listAllLinksRoute } from "@/infra/http/routes/listAllLinksRoute"
 
 const server = fastify()
 
@@ -50,7 +51,8 @@ server.register(fastifySwaggerUi, {
 
 server.register(createLinkRoute)
 server.register(deleteLinkRoute)
-server.register(getLinksRoute)
+server.register(getLinkRoute)
+server.register(listAllLinksRoute)
 
 console.log(env.DATABASE_URL)
 
