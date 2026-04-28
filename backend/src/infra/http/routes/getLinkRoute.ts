@@ -5,7 +5,7 @@ import { getOriginalURL } from "@/app/functions/getOriginalURL";
 import { isSuccess, unwrapEither } from "@/infra/shared/either";
 import { incrementAccessCount } from "@/app/functions/incrementAccessCount";
 
-export const getLinksRoute: FastifyPluginAsyncZod = async (server) => {
+export const getLinkRoute: FastifyPluginAsyncZod = async (server) => {
    server.get(
       "/shortlinks/:id",
       {
