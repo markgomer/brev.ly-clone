@@ -15,6 +15,7 @@ export const deleteLinkRoute: FastifyPluginAsyncZod = async (server) => {
             }),
             response: {
                204: z.null(),
+               400: z.object({ message: z.string() }),
                404: z.object({ message: z.string() }),
             },
          },
