@@ -1,23 +1,23 @@
-import "@/index.css";
-import { LinkList } from "./LinkList";
+import "./index.css";
+import { LinkList } from "@/components/LinkList";
 
 export function App() {
-  return (
-    <div className="max-w-7xl mx-auto p-8 text-center relative z-10">
-      <form className="justify-center items-center gap-8 mb-8">
-        <label>url</label><br/>
-        <input className="border border-solid border-white" type="text"/><br/>
-        <label>shortened link</label><br/>
-        <input className="border border-white" type="text"/><br/>
-        <input className="border border-white" type="submit" value="Submit"/>
-      </form>
+   return (
+      <div className="max-w-7xl mx-auto p-8 text-center relative z-10">
+         <form className="justify-center items-center gap-8 mb-8">
+            <label>url</label><br />
+            <input className="border border-solid border-white" type="text" /><br />
+            <label>shortened link</label><br />
+            <input className="border border-white" type="text" /><br />
+            <input className="border border-white" type="submit" value="Submit" />
+         </form>
 
-      <div>
-        <LinkList />
+         <div>
+            <LinkList />
+         </div>
+
       </div>
-
-    </div>
-  );
+   );
 }
 
 export default App;
