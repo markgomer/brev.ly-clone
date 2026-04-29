@@ -51,10 +51,10 @@ server.register(fastifySwaggerUi, {
 })
 
 server.register(createLinkRoute)
-server.register(deleteLinkRoute)
 server.register(getLinkRoute)
 server.register(listAllLinksRoute)
 server.register(exportLinksToCSVRoute)
+server.register(deleteLinkRoute)
 
 console.log(env.DATABASE_URL)
 

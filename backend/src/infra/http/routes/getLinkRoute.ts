@@ -10,7 +10,7 @@ export const getLinkRoute: FastifyPluginAsyncZod = async (server) => {
       "/shortlinks/:id",
       {
          schema: {
-            summary: "Get a Original Link",
+            summary: "Get an Original Link",
             tags: ["get-original-link"],
             params: z.object({
                id: z.string()
