@@ -4,8 +4,12 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "backend": "pushd backend && bun dev && popd",
-    "frontend": "pushd frontend && bun dev && popd",
-    "start": "NODE_ENV=production bun frontend/src/index.ts && bun backend/src/server.ts"
+    "dev": "concurrently -n backend,frontend -c blue,green \"bun --cwd backend dev\" \"bun --cwd frontend dev\"",
+    "backend": "bun --cwd backend dev",
+    "frontend": "bun --cwd frontend dev",
+    "start": "NODE_ENV=production bun --cwd backend src/server.ts & bun --cwd frontend src/index.ts & wait"
   },
+  "devDependencies": {
+    "concurrently": "9.2.1"
+  }
 }
