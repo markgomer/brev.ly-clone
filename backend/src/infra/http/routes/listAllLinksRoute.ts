@@ -17,7 +17,7 @@ export const listAllLinksRoute: FastifyPluginAsyncZod = async (server) => {
             },
          },
       },
-      async (request, reply) => {
+      async (_, reply) => {
          const result = await listAllLinks();
 
          if (isSuccess(result)) {

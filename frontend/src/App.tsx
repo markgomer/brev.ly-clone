@@ -1,21 +1,20 @@
 import "./index.css";
+import { useState } from "react";
+import { CreateLinkForm } from "@/components/CreateLinkForm";
 import { LinkList } from "@/components/LinkList";
 
+
 export function App() {
+   const [listKey, setListKey] = useState(0);
+
    return (
       <div className="max-w-7xl mx-auto p-8 text-center relative z-10">
-         <form className="justify-center items-center gap-8 mb-8">
-            <label>url</label><br />
-            <input className="border border-solid border-white" type="text" /><br />
-            <label>shortened link</label><br />
-            <input className="border border-white" type="text" /><br />
-            <input className="border border-white" type="submit" value="Submit" />
-         </form>
-
          <div>
-            <LinkList />
+            <CreateLinkForm onSuccess={() => setListKey(k => k + 1)} />
          </div>
-
+         <div>
+            <LinkList key={listKey} />
+         </div>
       </div>
    );
 }
