@@ -15,7 +15,7 @@ export const listAllLinksRoute: FastifyPluginAsyncZod = async (server) => {
                200: z.array(z.object(
                   {
                      originalURL: z.url(),
-                     shortenedURL: z.url(),
+                     shortenedURL: z.string(),
                      numberOfAccesses: z.number()
                   }
                )),
