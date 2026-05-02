@@ -12,7 +12,13 @@ export const listAllLinksRoute: FastifyPluginAsyncZod = async (server) => {
             summary: "List All Links",
             tags: ["list-all-links"],
             response: {
-               200: z.array(z.object({ originalURL: z.url(), shortenedURL: z.url() })),
+               200: z.array(z.object(
+                  {
+                     originalURL: z.url(),
+                     shortenedURL: z.url(),
+                     numberOfAccesses: z.number()
+                  }
+               )),
                400: z.object({ message: z.string() }),
             },
          },
