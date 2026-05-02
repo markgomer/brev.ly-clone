@@ -7,13 +7,13 @@ import { incrementAccessCount } from "@/app/functions/incrementAccessCount";
 
 export const getLinkRoute: FastifyPluginAsyncZod = async (server) => {
    server.get(
-      "/shortlinks/:id",
+      "/shortlinks/:alphanumeric",
       {
          schema: {
             summary: "Get an Original Link",
             tags: ["get-original-link"],
             params: z.object({
-               id: z.string()
+               alphanumeric: z.string()
             }),
             response: {
                200: z.object({ originalURL: z.string() }),
@@ -23,15 +23,14 @@ export const getLinkRoute: FastifyPluginAsyncZod = async (server) => {
          },
       },
       async (request, reply) => {
-         const { id } = request.params;
-         const idInt = parseInt(id);
+         const { alphanumeric } = request.params;
 
-         const result = await getOriginalURL(idInt);
+         const result = await getOriginalURL(alphanumeric);
 
          if (isSuccess(result)) {
             const { originalURL } = unwrapEither(result);
 
-            incrementAccessCount(idInt).catch(console.error);
+            incrementAccessCount(alphanumeric).catch(console.error);
 
             return reply.status(200).send({ originalURL });
 

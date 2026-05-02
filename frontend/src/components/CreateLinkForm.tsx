@@ -13,12 +13,6 @@ function toFullUrl(input: string): string {
    return `https://${trimmed}`;
 }
 
-// "short-link-123" → "https://brev.ly/short-link-123"
-function toShortenedUrl(slug: string): string {
-   const clean = slug.trim().replace(/^https?:\/\/[^/]+\/?/i, ""); // strip prefix if user pasted full URL
-   return `https://brev.ly/${clean}`;
-}
-
 export function CreateLinkForm({ onSuccess }: { onSuccess: () => void }) {
    const [error, setError] = useState<string | null>(null);
    const {
@@ -33,7 +27,7 @@ export function CreateLinkForm({ onSuccess }: { onSuccess: () => void }) {
 
       const payload = {
          originalLink: toFullUrl(data.originalLink),
-         shortenedLink: toShortenedUrl(data.shortenedLink),
+         shortenedLink: data.shortenedLink
       };
 
       const res = await fetch("http://localhost:3333/shortlinks", {

@@ -9,7 +9,7 @@ type CreateLinkInput = z.input<typeof createLinkInput>
 
 const createLinkInput = z.object({
    originalLink: z.url(),
-   shortenedLink: z.url(),
+   shortenedLink: z.string(),
 })
 
 export async function createLink(input: CreateLinkInput) {
@@ -21,6 +21,7 @@ export async function createLink(input: CreateLinkInput) {
       })
 
       return makeSuccess({ url: shortenedLink })
+
    } catch (err: any) {
       if (err?.cause?.code === "23505") {
          return makeFailure(new ShortenedLinkAlreadyExists())
