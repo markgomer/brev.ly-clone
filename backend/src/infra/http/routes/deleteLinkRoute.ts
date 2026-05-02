@@ -5,13 +5,13 @@ import z from "zod";
 
 export const deleteLinkRoute: FastifyPluginAsyncZod = async (server) => {
    server.delete(
-      "/shortlinks/:id",
+      "/shortlinks/:alphanumeric",
       {
          schema: {
             summary: "Delete a Shortened Link",
             tags: ["delete-link"],
             params: z.object({
-               id: z.string()
+               alphanumeric: z.string()
             }),
             response: {
                204: z.null(),
@@ -21,9 +21,9 @@ export const deleteLinkRoute: FastifyPluginAsyncZod = async (server) => {
          },
       },
       async (request, reply) => {
-         const id = Number(request.params.id);
+         const alphanumeric = request.params.alphanumeric;
 
-         const result = await deleteLink(id);
+         const result = await deleteLink(alphanumeric);
 
          if (isSuccess(result)) {
             return reply.status(204).send(null);

@@ -21,7 +21,10 @@ server.setValidatorCompiler(validatorCompiler)
 
 server.setSerializerCompiler(serializerCompiler)
 
-server.register(fastifyCors, { origin: '*' })
+server.register(fastifyCors, {
+  origin: "*",
+  methods: ["GET", "POST", "DELETE", "PUT", "PATCH"],
+});
 
 server.setErrorHandler((error, _, reply) => {
    if (hasZodFastifySchemaValidationErrors(error)) {
