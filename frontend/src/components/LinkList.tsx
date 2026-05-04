@@ -19,7 +19,7 @@ export function LinkList() {
    if (links.length === 0) return <p className="text-gray-400 text-sm">No links yet.</p>;
 
    return (
-      < ul className="flex flex-col gap-3" >
+      <ul className="flex flex-col gap-3" >
          {
             links.map(l => (
                <li key={l.shortenedURL}>
