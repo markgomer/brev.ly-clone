@@ -14,6 +14,7 @@ import { deleteLinkRoute } from "@/infra/http/routes/deleteLinkRoute"
 import { getLinkRoute } from "./routes/getLinkRoute"
 import { listAllLinksRoute } from "@/infra/http/routes/listAllLinksRoute"
 import { exportLinksToCSVRoute } from "@/infra/http/routes/exportLinksRoute"
+import { redirectLinkRoute } from "@/infra/http/routes/redirectLinkRoute"
 
 const server = fastify()
 
@@ -58,6 +59,7 @@ server.register(getLinkRoute)
 server.register(listAllLinksRoute)
 server.register(exportLinksToCSVRoute)
 server.register(deleteLinkRoute)
+server.register(redirectLinkRoute);
 
 console.log(env.DATABASE_URL)
 

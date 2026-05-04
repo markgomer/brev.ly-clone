@@ -16,6 +16,7 @@
     "react": "19",
     "react-dom": "19",
     "react-hook-form": "7.74.0",
+    "react-router-dom": "^7.14.2",
     "tailwindcss": "4.1.11",
     "vite": "8.0.10"
   },
