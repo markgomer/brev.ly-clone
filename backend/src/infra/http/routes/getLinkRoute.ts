@@ -3,7 +3,6 @@ import z from "zod";
 
 import { getOriginalURL } from "@/app/functions/getOriginalURL";
 import { isSuccess, unwrapEither } from "@/infra/shared/either";
-import { incrementAccessCount } from "@/app/functions/incrementAccessCount";
 
 export const getLinkRoute: FastifyPluginAsyncZod = async (server) => {
    server.get(
@@ -29,8 +28,6 @@ export const getLinkRoute: FastifyPluginAsyncZod = async (server) => {
 
          if (isSuccess(result)) {
             const { originalURL } = unwrapEither(result);
-
-            incrementAccessCount(alphanumeric).catch(console.error);
 
             return reply.status(200).send({ originalURL });
 
