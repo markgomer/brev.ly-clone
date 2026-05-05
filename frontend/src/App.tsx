@@ -26,14 +26,14 @@ export function App() {
          <Route
             path="/"
             element={
-               <div className="min-h-screen bg-gray-100 mx-auto px-4 py-8">
+               <div className="min-h-screen overflow-hidden bg-gray-100 px-4 py-8 flex flex-col">
                   <header className="max-w-4xl mx-auto mb-8">
                      <div className="flex items-center gap-2">
                         <img src={logo} alt="brev.ly" className="h-8" />
                      </div>
                   </header>
 
-                  <main>
+                  <main className="max-w-4xl w-full mx-auto flex flex-col md:flex-row gap-4 items-start flex-1 min-h-0">
                      <CreateLinkForm onSuccess={() => setListKey(k => k + 1)} />
                      <LinkList key={listKey} onDownload={handleDownload}/>
                   </main>
