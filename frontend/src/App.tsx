@@ -4,12 +4,12 @@ import { Route, Routes } from "react-router-dom";
 import { CreateLinkForm } from "@/components/CreateLinkForm";
 import { LinkList } from "@/components/LinkList";
 import { RedirectPage } from "@/components/RedirectPage";
-
+import logo from "../assets/Logo.svg";
 
 export function App() {
    const [listKey, setListKey] = useState(0);
 
-   async function handleClick() {
+   async function handleDownload() {
       const res = await fetch(
          `http://localhost:3333/shortlinks/exports`,
          { method: "GET" }
@@ -26,12 +26,17 @@ export function App() {
          <Route
             path="/"
             element={
-               <div className="max-w-7xl mx-auto p-8 flex text-center">
-                  <CreateLinkForm onSuccess={() => setListKey(k => k + 1)} />
-                  <button onClick={handleClick} className="border hover:underline" title="Download CSV">
-                     download
-                  </button>
-                  <LinkList key={listKey} />
+               <div className="min-h-screen bg-gray-400 mx-auto px-4 py-8">
+                  <header className="max-w-4xl mx-auto mb-8">
+                     <div className="flex items-center gap-2">
+                        <img src={logo} alt="brev.ly" className="h-8" />
+                     </div>
+                  </header>
+
+                  <main>
+                     <CreateLinkForm onSuccess={() => setListKey(k => k + 1)} />
+                     <LinkList key={listKey} onDownload={handleDownload}/>
+                  </main>
                </div>
             }
          />

@@ -1,9 +1,18 @@
 import { useEffect, useState } from "react";
 import { LinkCard } from "./LinkCard";
+import { DownloadSimpleIcon } from "@phosphor-icons/react";
 
-type Link = { originalURL: string; shortenedURL: string; numberOfAccesses: number };
+type Link = {
+   originalURL: string;
+   shortenedURL: string;
+   numberOfAccesses: number
+};
 
-export function LinkList() {
+type Props = {
+   onDownload: () => void;
+};
+
+export function LinkList({ onDownload }: Props) {
    const [links, setLinks] = useState<Link[]>([]);
 
    function handleDelete(shortenedURL: string) {
@@ -26,17 +35,35 @@ export function LinkList() {
       return () => document.removeEventListener("visibilitychange", handleVisibility);
    }, []);
 
-   if (links.length === 0) return <p className="text-gray-400 text-sm">No links yet.</p>;
-
    return (
-      <ul className="flex flex-col gap-3" >
-         {
-            links.map(l => (
-               <li key={l.shortenedURL}>
-                  <LinkCard link={l} onDelete={handleDelete} />
-               </li>
-            ))
-         }
-      </ul >
+      <section className="w-full bg-white rounded-xl p-6 flex flex-col gap-4 shadow-sm">
+         {/* Title and button */}
+         <div className="flex items-center justify-between">
+            <h2 className="text-lg text-gray-600">Meus links</h2>
+            <button
+               onClick={onDownload}
+               className="inline-flex items-center gap-2 rounded border border-gray-300 px-3 py-1.5 text-md text-gray-600 hover:border-blue-base transition-colors duration-150 cursor-pointer"
+            >
+               <DownloadSimpleIcon size={14} />
+               Baixar CSV
+            </button>
+         </div>
+
+         {links.length === 0 ? (
+            <p className="text-sm text-gray-400 text-center py-8">
+               Nenhum link cadastrado ainda
+            </p>
+         ) : (
+            <ul className="flex flex-col divide-y divide-gray-100" >
+               {
+                  links.map(l => (
+                     <li key={l.shortenedURL}>
+                        <LinkCard link={l} onDelete={handleDelete} />
+                     </li>
+                  ))
+               }
+            </ul >
+         )}
+      </section>
    );
 }
