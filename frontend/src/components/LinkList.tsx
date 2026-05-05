@@ -3,6 +3,7 @@ import { LinkCard } from "./LinkCard";
 import { DownloadSimpleIcon } from "@phosphor-icons/react";
 
 type Link = {
+   id: number,
    originalURL: string;
    shortenedURL: string;
    numberOfAccesses: number
@@ -22,7 +23,7 @@ export function LinkList({ onDownload }: Props) {
    function fetchLinks() {
       fetch("http://localhost:3333/shortlinks")
          .then(r => r.json())
-         .then(setLinks);
+         .then((data: Link[]) => setLinks([...data].sort((a, b) => b.id - a.id)));
    }
 
    function handleVisibility() {

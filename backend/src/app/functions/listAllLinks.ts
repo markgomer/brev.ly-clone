@@ -4,11 +4,12 @@ import { linksTable } from "@/infra/db/schemas/links";
 import { makeSuccess } from "@/infra/shared/either";
 import type { InferSelectModel } from "drizzle-orm";
 
-type Link = Pick<InferSelectModel<typeof linksTable>, "originalURL" | "shortenedURL" | "numberOfAccesses">;
+type Link = Pick<InferSelectModel<typeof linksTable>, "id" | "originalURL" | "shortenedURL" | "numberOfAccesses">;
 
 export async function listAllLinks() {
    const links: Link[] = await db
       .select({
+         id: linksTable.id,
          originalURL: linksTable.originalURL,
          shortenedURL: linksTable.shortenedURL,
          numberOfAccesses: linksTable.numberOfAccesses
