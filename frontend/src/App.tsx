@@ -26,7 +26,7 @@ export function App() {
          <Route
             path="/"
             element={
-               <div className="min-h-screen bg-gray-400 mx-auto px-4 py-8">
+               <div className="min-h-screen bg-gray-100 mx-auto px-4 py-8">
                   <header className="max-w-4xl mx-auto mb-8">
                      <div className="flex items-center gap-2">
                         <img src={logo} alt="brev.ly" className="h-8" />
