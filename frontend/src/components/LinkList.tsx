@@ -6,15 +6,25 @@ type Link = { originalURL: string; shortenedURL: string; numberOfAccesses: numbe
 export function LinkList() {
    const [links, setLinks] = useState<Link[]>([]);
 
-   useEffect(() => {
-      fetch("http://localhost:3333/shortlinks")
-         .then(r => r.json())
-         .then(setLinks);
-   }, []);
-
    function handleDelete(shortenedURL: string) {
       setLinks(prev => prev.filter(l => l.shortenedURL !== shortenedURL));
    }
+
+   function fetchLinks() {
+      fetch("http://localhost:3333/shortlinks")
+         .then(r => r.json())
+         .then(setLinks);
+   }
+
+   function handleVisibility() {
+      if (document.visibilityState === "visible") fetchLinks();
+   }
+
+   useEffect(() => {
+      fetchLinks();
+      document.addEventListener("visibilitychange", handleVisibility);
+      return () => document.removeEventListener("visibilitychange", handleVisibility);
+   }, []);
 
    if (links.length === 0) return <p className="text-gray-400 text-sm">No links yet.</p>;
 
