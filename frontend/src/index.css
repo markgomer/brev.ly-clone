@@ -1,50 +1,46 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap');
 
-@layer base {
-  :root {
-    @apply text-[rgba(255,255,255,0.87)] bg-[#242424] font-sans;
-  }
+@theme {
+    /* Blue */
+    --color-blue-base: #2C46B1;
+    --color-blue-dark: #2C4091;
 
-  body {
-    @apply grid place-items-center min-w-[320px] min-h-screen relative m-0;
-  }
-}
+    /* Grayscale */
+    --color-white:    #FFFFFF;
+    --color-gray-100: #F9F9FB;
+    --color-gray-200: #E4E6EC;
+    --color-gray-300: #CDCFD5;
+    --color-gray-400: #74798B;
+    --color-gray-500: #4D505C;
+    --color-gray-600: #1F2025;
 
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  opacity: 0.05;
-  background: url("./logo.svg");
-  background-size: 256px;
-  transform: rotate(-12deg) scale(1.35);
-  animation: slide 30s linear infinite;
-  pointer-events: none;
-}
+    /* Feedback */
+    --color-danger:   #B12C4D;
 
-@keyframes slide {
-  from {
-    background-position: 0 0;
-  }
-  to {
-    background-position: 256px 224px;
-  }
-}
+    /* Font family */
+    --font-sans: 'Open Sans', sans-serif;
 
-@keyframes spin {
-  from {
-    transform: rotate(0);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
+    /* Text XL — 24px / 32px / Bold */
+    --text-xl:              1.5rem;
+    --text-xl--line-height: 2rem;
+    --text-xl--font-weight: 700;
 
-@media (prefers-reduced-motion) {
-  *,
-  ::before,
-  ::after {
-    animation: none !important;
-  }
+    /* Text Lg — 18px / 24px / Bold */
+    --text-lg:              1.125rem;
+    --text-lg--line-height: 1.5rem;
+    --text-lg--font-weight: 700;
+
+    /* Text Md — 14px / 18px / SemiBold */
+    --text-md:              0.875rem;
+    --text-md--line-height: 1.125rem;
+    --text-md--font-weight: 600;
+
+    /* Text Sm — 12px / 16px / Regular & SemiBold */
+    --text-sm:              0.75rem;
+    --text-sm--line-height: 1rem;
+
+    /* Text Xs — 10px / 14px / Regular / Uppercase */
+    --text-xs:              0.625rem;
+    --text-xs--line-height: 0.875rem;
 }
