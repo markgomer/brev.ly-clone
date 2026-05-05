@@ -8,8 +8,8 @@ type Props = {
 };
 
 export function LinkCard({ link, onDelete }: Props) {
-   const fullShortenedURL = `http://localhost:3333/${link.shortenedURL}`; // display only
    const [accessCount, setAccessCount] = useState(link.numberOfAccesses);
+   const fullShortenedURL = `http://localhost:3333/${link.shortenedURL}`;
 
    async function handleDelete() {
       const response = await fetch(`http://localhost:3333/shortlinks/${encodeURIComponent(link.shortenedURL)}`,
