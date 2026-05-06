@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "bunx --bun vite",
+    "net": "bunx --bun vite --host",
     "build": "bunx --bun vite build",
     "lint": "bunx --bun eslint .",
     "preview": "bunx --bun vite preview"
