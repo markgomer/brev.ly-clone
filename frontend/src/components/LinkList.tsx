@@ -37,7 +37,7 @@ export function LinkList({ onDownload }: Props) {
    }, []);
 
    return (
-      <section className="w-full bg-white rounded-xl p-6 flex flex-col gap-4 shadow-sm">
+      <section className="w-full bg-white rounded-xl p-6 flex flex-col gap-4 shadow-sm max-h-[calc(100vh-8rem)] overflow-y-auto">
          {/* Title and button */}
          <div className="flex items-center justify-between">
             <h2 className="text-lg text-gray-600">Meus links</h2>
