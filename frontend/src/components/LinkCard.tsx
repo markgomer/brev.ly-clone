@@ -1,4 +1,5 @@
-import { CopyIcon, TrashIcon } from "@phosphor-icons/react";
+import { CheckIcon, CopyIcon, TrashIcon } from "@phosphor-icons/react";
+import { useRef, useState } from "react";
 
 type Link = {
    originalURL: string;
@@ -13,6 +14,8 @@ type Props = {
 
 export function LinkCard({ link, onDelete }: Props) {
    const fullShortenedURL = `localhost:5173/${link.shortenedURL}`;
+   const [copied, setCopied] = useState(false);
+   const copyTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
    async function handleDelete() {
       const response = await fetch(`http://localhost:3333/shortlinks/${encodeURIComponent(link.shortenedURL)}`,
@@ -22,6 +25,9 @@ export function LinkCard({ link, onDelete }: Props) {
    }
    function handleCopy() {
       navigator.clipboard.writeText(fullShortenedURL);
+      setCopied(true);
+      if (copyTimer.current) clearTimeout(copyTimer.current);
+      copyTimer.current = setTimeout(() => setCopied(false), 2000);
    }
 
    return (
@@ -47,13 +53,27 @@ export function LinkCard({ link, onDelete }: Props) {
                {link.numberOfAccesses} {link.numberOfAccesses === 1 ? "acesso" : "acessos"}
             </span>
 
-            {/* buttons */}
+            {/* copy button */}
             <button
                onClick={handleCopy}
                title="Copiar link"
-               className="inline-flex items-center justify-center size-6 rounded border border-gray-300 text-gray-500 hover:border-blue-base hover:text-blue-base transition-colors duration-150 cursor-pointer"
+               className={[
+                  "inline-flex items-center justify-center size-6 rounded",
+                  "border border-gray-300 text-gray-500 hover:border-blue-base",
+                  "hover:text-blue-base transition-colors duration-150",
+                  "cursor-pointer text-sm",
+                  copied
+                     ? "border-green-500 text-green-600 bg-green-50"
+                     : "border-gray-300 text-gray-500 hover:border-blue-base"
+               ].join(" ")}
             >
-               <CopyIcon size={14} />
+               {copied ? (
+                  <>
+                     <CheckIcon size={13} />
+                  </>
+               ) : (
+                  <CopyIcon size={14} />
+               )}
             </button>
 
             <button
