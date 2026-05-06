@@ -26,8 +26,8 @@ export function App() {
          <Route
             path="/"
             element={
-               <div className="h-screen overflow-hidden bg-gray-100 px-4 py-8 flex flex-col">
-                  <header className="max-w-4xl mx-auto mb-8">
+               <div className="h-screen overflow-hidden bg-gray-100 px-4 py-4 flex flex-col">
+                  <header className="max-w-4xl mx-auto mb-4">
                      <div className="flex items-center gap-2">
                         <img src={logo} alt="brev.ly" className="h-8" />
                      </div>
