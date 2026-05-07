@@ -8,19 +8,30 @@ export function RedirectPage() {
    const [state, setState] = useState<State>("loading");
 
    useEffect(() => {
-      fetch(`http://localhost:3333/${slug}`)
+      if (!slug) {
+         setState("not-found");
+         return;
+      }
+
+      const controller = new AbortController();
+
+      fetch(`http://localhost:3333/${slug}`, { signal: controller.signal })
          .then(res => {
-            if (res.redirected) {
-               window.location.href = res.url;
-            } else if (res.ok) {
+            if (res.ok) {
                return res.json().then(data => {
-                  window.location.href = data.url;
+                  window.location.replace(data.originalURL);
                });
             } else {
                setState("not-found");
             }
          })
-         .catch(() => setState("not-found"));
+         .catch(err => {
+            if (err.name !== "AbortError") {
+               setState("not-found");
+            }
+         });
+
+      return () => controller.abort();
    }, [slug]);
 
    if (state === "loading") {
@@ -37,14 +48,10 @@ export function RedirectPage() {
    return (
       <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
          <div className="bg-white rounded-xl shadow-sm p-12 flex flex-col items-center gap-4 max-w-lg w-full text-center">
-
-            {/* Glitch 404 */}
             <div className="relative select-none">
                <img src="../../assets/404.svg" alt="not-found" />
             </div>
-
             <h1 className="text-lg text-gray-600 mt-2">Link não encontrado</h1>
-
             <p className="text-md text-gray-400 leading-relaxed">
                O link que você está tentando acessar não existe, foi removido ou é
                uma URL inválida. Saiba mais em{" "}
@@ -53,7 +60,6 @@ export function RedirectPage() {
                </a>
                .
             </p>
-
          </div>
       </div>
    );

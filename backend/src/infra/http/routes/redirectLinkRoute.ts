@@ -15,7 +15,7 @@ export const redirectLinkRoute: FastifyPluginAsyncZod = async (server) => {
                slug: z.string()
             }),
             response: {
-               302: z.object({ originalURL: z.string() }),
+               200: z.object({ originalURL: z.string() }),
                400: z.object({ message: z.string() }),
                404: z.object({ message: z.string() })
             },
@@ -29,7 +29,7 @@ export const redirectLinkRoute: FastifyPluginAsyncZod = async (server) => {
          if (isSuccess(result)) {
             await incrementAccessCount(slug);
             const { originalURL } = unwrapEither(result);
-            return reply.redirect(originalURL, 302);
+            return reply.status(200).send({ originalURL });
          } else {
             const error = unwrapEither(result);
             switch (error) {
