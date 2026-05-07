@@ -30,7 +30,7 @@ server.register(fastifyCors, {
 server.setErrorHandler((error, _, reply) => {
    if (hasZodFastifySchemaValidationErrors(error)) {
       return reply.status(400).send({
-         message: "Validation Error",
+         message: "URL mal formatada",
          issues: error.validation,
       })
    }
