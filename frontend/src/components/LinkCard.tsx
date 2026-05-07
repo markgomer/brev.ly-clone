@@ -29,26 +29,32 @@ function ConfirmDialog({ onConfirm, onCancel }: ConfirmDialogProps) {
          <div className="absolute inset-0 bg-gray-600/40" onClick={onCancel} />
 
          {/* Panel */}
-         <div className="relative bg-white rounded-xl shadow-lg p-6 w-80 flex flex-col gap-5">
+         <div className="relative bg-white rounded-xl shadow-lg p-6 w-80 flex \
+            flex-col gap-5">
             <div className="flex flex-col gap-1">
                <h2 id="confirm-title" className="text-lg text-gray-600">
                   Excluir link
                </h2>
                <p className="text-sm text-gray-400">
-                  Tem certeza que deseja excluir este link? Esta ação não pode ser desfeita.
+                  Tem certeza que deseja excluir este link? Esta ação não pode \
+                  ser desfeita.
                </p>
             </div>
 
             <div className="flex gap-3 justify-end">
                <button
                   onClick={onCancel}
-                  className="rounded border border-gray-300 px-4 py-2 text-md text-gray-600 hover:border-blue-base hover:text-blue-base transition-colors duration-150 cursor-pointer"
+                  className="rounded border border-gray-300 px-4 py-2 text-md \
+                     text-gray-600 hover:border-blue-base hover:text-blue-base \
+                     transition-colors duration-150 cursor-pointer"
                >
                   Cancelar
                </button>
                <button
                   onClick={onConfirm}
-                  className="rounded px-4 py-2 text-md text-white bg-danger hover:opacity-90 transition-opacity duration-150 cursor-pointer"
+                  className="rounded px-4 py-2 text-md text-white bg-danger \
+                     hover:opacity-90 transition-opacity duration-150 \
+                     cursor-pointer"
                >
                   Excluir
                </button>
@@ -93,7 +99,8 @@ export function LinkCard({ link, onDelete }: Props) {
                   href={`http://localhost:5173/${link.shortenedURL}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="text-md font-semibold text-blue-base truncate hover:underline"
+                  className="text-md font-semibold text-blue-base truncate \
+                     hover:underline"
                >
                   {fullShortenedURL}
                </a>
@@ -105,7 +112,9 @@ export function LinkCard({ link, onDelete }: Props) {
             {/* access count and icons */}
             <div className="flex items-center gap-2 shrink-0">
                <span className="text-sm text-gray-400 whitespace-nowrap">
-                  {link.numberOfAccesses} {link.numberOfAccesses === 1 ? "acesso" : "acessos"}
+                  {link.numberOfAccesses} {
+                     link.numberOfAccesses === 1 ? "acesso" : "acessos"
+                  }
                </span>
 
                {/* copy button */}
@@ -134,7 +143,10 @@ export function LinkCard({ link, onDelete }: Props) {
                <button
                   onClick={() => setConfirmingDialog(true)}
                   title="Excluir link"
-                  className="inline-flex items-center justify-center size-6 rounded border border-gray-300 text-gray-500 hover:border-danger hover:text-danger transition-colors duration-150 cursor-pointer"
+                  className="inline-flex items-center justify-center size-6 \
+                     rounded border border-gray-300 text-gray-500 \
+                     hover:border-danger hover:text-danger transition-colors \
+                     duration-150 cursor-pointer"
                >
                   <TrashIcon size={14} />
                </button>

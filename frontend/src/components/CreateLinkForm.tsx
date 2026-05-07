@@ -79,7 +79,8 @@ export function CreateLinkForm({ onSuccess }: { onSuccess: () => void }) {
             {/* Original link */}
             <div className="flex flex-col gap-1">
                <label
-                  className="text-xs uppercase font-semibold tracking-wide text-blue-base">
+                  className="text-xs uppercase font-semibold tracking-wide \
+                     text-blue-base">
                   Link original
                </label>
 
@@ -139,7 +140,8 @@ export function CreateLinkForm({ onSuccess }: { onSuccess: () => void }) {
                         }
                      )}
                      placeholder="meu-link"
-                     className="flex-1 outline-none text-md text-gray-600 placeholder:text-gray-300 bg-transparent min-w-0"
+                     className="flex-1 outline-none text-md text-gray-600 \
+                        placeholder:text-gray-300 bg-transparent min-w-0"
                   />
                </div>
 
@@ -151,7 +153,10 @@ export function CreateLinkForm({ onSuccess }: { onSuccess: () => void }) {
             <button
                type="submit"
                disabled={isSubmitting}
-               className="w-full rounded px-4 py-2 text-md text-white bg-blue-base hover:bg-blue-dark disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150 cursor-pointer"
+               className="w-full rounded px-4 py-2 text-md text-white \
+                  bg-blue-base hover:bg-blue-dark disabled:opacity-50 \
+                  disabled:cursor-not-allowed transition-colors duration-150 \
+                  cursor-pointer"
             >
                {isSubmitting ? "Salvando..." : "Salvar link"}
             </button>
