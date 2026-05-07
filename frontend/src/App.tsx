@@ -4,7 +4,6 @@ import { Route, Routes } from "react-router-dom";
 import { CreateLinkForm } from "@/components/CreateLinkForm";
 import { LinkList } from "@/components/LinkList";
 import { RedirectPage } from "@/components/RedirectPage";
-import logo from "../assets/Logo.svg";
 
 export function App() {
    const [listKey, setListKey] = useState(0);
@@ -30,7 +29,11 @@ export function App() {
                   flex flex-col">
                   <header className="max-w-4xl mx-auto mb-4">
                      <div className="flex items-center gap-2">
-                        <img src={logo} alt="brev.ly" className="h-8" />
+                        <img
+                           src="../assets/Logo.svg"
+                           alt="brev.ly"
+                           className="h-8"
+                        />
                      </div>
                   </header>
 
