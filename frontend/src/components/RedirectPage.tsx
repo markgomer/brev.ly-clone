@@ -38,7 +38,7 @@ export function RedirectPage() {
       return (
          <div className="flex items-center justify-center min-h-screen bg-gray-100">
             <div className="relative select-none">
-               <img src="../../assets/Logo_Icon.svg" alt="brev.ly logo" />
+               <img src="Logo_Icon.svg" alt="brev.ly logo" />
             </div>
             <p className="text-md text-gray-400">Redirecionando...</p>
          </div>
@@ -49,7 +49,7 @@ export function RedirectPage() {
       <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
          <div className="bg-white rounded-xl shadow-sm p-12 flex flex-col items-center gap-4 max-w-lg w-full text-center">
             <div className="relative select-none">
-               <img src="../../assets/404.svg" alt="not-found" />
+               <img src="404.svg" alt="not-found" />
             </div>
             <h1 className="text-lg text-gray-600 mt-2">Link não encontrado</h1>
             <p className="text-md text-gray-400 leading-relaxed">
