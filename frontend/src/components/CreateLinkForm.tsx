@@ -40,7 +40,7 @@ export function CreateLinkForm({ onSuccess }: { onSuccess: () => void }) {
       reset,
       setError,
       formState: { errors, isSubmitting },
-   } = useForm<FormData>();
+   } = useForm<FormData>({ mode: "onChange" });
 
    async function onSubmit(data: FormData) {
       const payload = {
@@ -79,26 +79,43 @@ export function CreateLinkForm({ onSuccess }: { onSuccess: () => void }) {
             {/* Original link */}
             <div className="flex flex-col gap-1">
                <label
-                  className="text-xs uppercase font-semibold tracking-wide \
-                     text-blue-base">
+                  className={[
+                     "text-xs uppercase font-semibold tracking-wide",
+                     errors.originalLink ? "text-danger" : "text-blue-base",
+                  ].join(" ")}
+               >
                   Link original
                </label>
 
-               <input
-                  {...register(
-                     "originalLink",
-                     { required: "Informe o link original." }
-                  )}
-                  placeholder="google.com"
+               <div
                   className={[
-                     "w-full rounded border px-3 py-2 text-md text-gray-600",
-                     "placeholder:text-gray-300 outline-none transition-colors",
-                     "duration-150 bg-white",
-                     errors.originalLink ?
-                        "border-danger focus:border-danger" :
-                        "border-gray-300 focus:border-blue-base",
+                     "flex items-center rounded border px-3 py-2 bg-white",
+                     "transition-colors duration-150",
+                     errors.originalLink
+                        ? "border-danger focus-within:border-danger"
+                        : "border-gray-300 focus-within:border-blue-base",
                   ].join(" ")}
-               />
+               >
+
+                  {/* PERSISTENT PREFIX */}
+                  <span className="text-md text-gray-400 select-none whitespace-nowrap">
+                     https://
+                  </span>
+
+                  <input
+                     {...register("originalLink", {
+                        required: "Informe o link original.",
+                        onChange: () => { },
+                        validate: v =>
+                           /^[a-zA-Z0-9\-._~:/?#[\]@!$&'()*+,;=%]+$/.test(v.trim()) ||
+                           "Apenas caracteres válidos em URLs.",
+                     })}
+                     placeholder="google.com"
+                     className="flex-1 outline-none text-md text-gray-600 \
+                        placeholder:text-gray-300 bg-transparent min-w-0"
+                  />
+               </div>
+
                {errors.originalLink && (
                   <ErrorMessage message={errors.originalLink.message!} />
                )}
