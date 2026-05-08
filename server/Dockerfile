@@ -35,6 +35,7 @@ WORKDIR /usr/src/app
 COPY --from=build /usr/src/app/dist ./dist
 COPY --from=build /usr/src/app/node_modules ./node_modules
 COPY --from=build /usr/src/app/package.json ./package.json
+COPY --from=build /usr/src/app/src/infra/db/migrations ./migrations
 
 EXPOSE 3333
 
