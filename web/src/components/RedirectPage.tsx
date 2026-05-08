@@ -36,11 +36,23 @@ export function RedirectPage() {
 
    if (state === "loading") {
       return (
-         <div className="flex items-center justify-center min-h-screen bg-gray-100">
-            <div className="relative select-none">
-               <img src="Logo_Icon.svg" alt="brev.ly logo" />
+         <div className="min-h-screen bg-[#ECEEF2] flex items-center justify-center">
+            <div className="bg-white rounded-2xl px-16 py-14 w-[480px] flex flex-col items-center shadow-sm">
+               <img src="./Logo_Icon.svg" alt="Logo" className="w-12 h-12 mb-6" />
+
+               <h1 className="text-xl font-semibold text-gray-900 mb-3">
+                  Redirecionando...
+               </h1>
+
+               <p className="text-sm text-gray-500 text-center leading-relaxed">
+                  O link será aberto automaticamente em alguns instantes.
+                  <br />
+                  Não foi redirecionado?{" "}
+                  <a href="#" className="text-blue-600 font-medium hover:underline">
+                     Acesse aqui
+                  </a>
+               </p>
             </div>
-            <p className="text-md text-gray-400">Redirecionando...</p>
          </div>
       );
    }
