@@ -4,10 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "concurrently -n backend,frontend -c blue,green \"bun --cwd backend dev\" \"bun --cwd frontend dev\"",
-    "backend": "bun --cwd backend dev",
-    "frontend": "bun --cwd frontend dev",
-    "start": "NODE_ENV=production bun --cwd backend src/server.ts & bun --cwd frontend src/index.ts & wait"
+    "dev": "concurrently -n server,web -c blue,green \"bun --cwd server dev\" \"bun --cwd web dev\"",
+    "server": "bun --cwd server dev",
+    "web": "bun --cwd web dev",
+    "start": "NODE_ENV=production bun --cwd server src/server.ts & bun --cwd web src/index.ts & wait"
   },
   "devDependencies": {
     "concurrently": "9.2.1"
