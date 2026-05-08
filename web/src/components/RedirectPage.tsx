@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import logo from "/Logo_Icon.svg";
 
 type State = "loading" | "not-found";
 
@@ -38,7 +39,7 @@ export function RedirectPage() {
       return (
          <div className="min-h-screen bg-[#ECEEF2] flex items-center justify-center">
             <div className="bg-white rounded-2xl px-16 py-14 w-[480px] flex flex-col items-center shadow-sm">
-               <img src="./Logo_Icon.svg" alt="Logo" className="w-12 h-12 mb-6" />
+               <img src={logo} alt="Logo" className="w-12 h-12 mb-6" />
 
                <h1 className="text-xl font-semibold text-gray-900 mb-3">
                   Redirecionando...
