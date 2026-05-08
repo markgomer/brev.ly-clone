@@ -8,7 +8,7 @@
         "@phosphor-icons/react": "2.1.10",
         "@tailwindcss/vite": "4.2.4",
         "@vitejs/plugin-react": "6.0.1",
-        "bun-plugin-tailwind": "^0.1.2",
+        "bun-plugin-tailwind": "0.1.2",
         "react": "19",
         "react-dom": "19",
         "react-hook-form": "7.74.0",
