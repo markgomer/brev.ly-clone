@@ -30,7 +30,7 @@ export function App() {
                   <header className="max-w-4xl mx-auto mb-4">
                      <div className="flex items-center gap-2">
                         <img
-                           src="../assets/Logo.svg"
+                           src="Logo.svg"
                            alt="brev.ly"
                            className="h-8"
                         />

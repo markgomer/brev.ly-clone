@@ -5,7 +5,7 @@
     "": {
       "name": "backend",
       "dependencies": {
-        "@aws-sdk/client-s3": "^3.1038.0",
+        "@aws-sdk/client-s3": "3.1038.0",
         "@aws-sdk/lib-storage": "3.1038.0",
         "@fastify/cors": "11.2.0",
         "@fastify/swagger": "9.7.0",
@@ -21,7 +21,7 @@
         "@types/bun": "latest",
         "dotenv-cli": "11.0.0",
         "drizzle-kit": "0.31.10",
-        "tsup": "8.5.1",
+        "tsup": "^8.5.1",
         "tsx": "4.21.0",
       },
       "peerDependencies": {
