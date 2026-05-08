@@ -49,9 +49,13 @@ export function RedirectPage() {
                   O link será aberto automaticamente em alguns instantes.
                   <br />
                   Não foi redirecionado?{" "}
-                  <a href="#" className="text-blue-600 font-medium hover:underline">
+                  <a
+                     href={`http://localhost:3333/${slug}`}
+                     className="text-blue-600 font-medium hover:underline"
+                  >
                      Acesse aqui
                   </a>
+
                </p>
             </div>
          </div>
