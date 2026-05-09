@@ -16,12 +16,13 @@ export function RedirectPage() {
 
       const controller = new AbortController();
 
-      fetch(`http://localhost:3333/${slug}`, { signal: controller.signal })
+      fetch(`http://localhost:3333/${slug}`, {
+         signal: controller.signal,
+         redirect: "manual"
+      })
          .then(res => {
-            if (res.ok) {
-               return res.json().then(data => {
-                  window.location.replace(data.originalURL);
-               });
+            if (res.type === "opaqueredirect") {
+               window.location.replace(`http://localhost:3333/${slug}`);
             } else {
                setState("not-found");
             }
