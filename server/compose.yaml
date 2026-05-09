@@ -1,10 +1,10 @@
 # podman compose up --build -d
 services:
-  app:
+  server:
     build: .
     container_name: brev.ly
     ports:
-      - 3333:$PORT
+      - 3333:$BACKEND_PORT
     environment:
       - CLOUDFARE_ACCOUNT_ID=$CLOUDFARE_ACCOUNT_ID
       - CLOUDFARE_ACCESS_KEY_ID=$CLOUDFARE_ACCESS_KEY_ID
@@ -13,7 +13,7 @@ services:
       - CLOUDFARE_PUBLIC_URL=$CLOUDFARE_PUBLIC_URL
       - DATABASE_URL=$DB_CONTAINER_URL
     networks:
-      - app
+      - server
     depends_on:
       - db
 
@@ -29,14 +29,14 @@ services:
     volumes:
       - db:/var/lib/postgresql/data
     networks:
-      - app
+      - server
       - db
 
 volumes:
   db:
     driver: local
 networks:
-  app:
+  server:
     driver: bridge
   db:
     driver: bridge
