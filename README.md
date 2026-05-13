@@ -1,37 +1,34 @@
-# Brev.ly clone
+# Brev.ly
 
-Trabalho de avaliação da disciplina Fundamentos Técnicos e Estratégicos ministrada na Pós Graduação Full Stack com IA na Faculdade de Tecnologia Rocketseat.
+A modern URL shortener service with a full-featured API and a React management dashboard.
 
-API para gerenciar o encurtamento de URL’s + aplicação React que permite o gerenciamento de URL’s encurtadas.
+## 🚀 Stack
 
-## Requisitos
+- **Frontend**: React 19, Vite, TailwindCSS 4, Phosphor Icons.
+- **Backend**: Fastify, Drizzle ORM, PostgreSQL, Zod, Swagger.
+- **Infrastructure**: Bun, Docker, Cloudflare R2 (S3).
 
-- Node v24 ou Bun.
-- Docker ou Podman.
+## 🛠️ Setup & Execution
 
-## Instruções
-
-Clone o repositório:
-
-```sh
-git clone https://github.com/markgomer/brev.ly-clone.git
+### 1. Environment
+Create a `.env` file in the root based on `.env.example` and fill in your credentials:
+```bash
+cp .env.example .env
 ```
 
-Executar o backend:
-
-```sh
+### 2. Backend (Container)
+Start the database and server using Docker:
+```bash
 cd server && docker compose up -d
 ```
 
-Executar o frontend:
-
-```sh
+### 3. Frontend (Build & Run)
+Build and preview the React application:
+```bash
 cd web && bun i && bun run build && bun run preview
 ```
 
-URL para Acessar aplicação pelo browser:
+## 🔗 Access
+- **Frontend**: [http://localhost:5173/](http://localhost:5173/)
+- **API Docs**: [http://localhost:3333/docs](http://localhost:3333/docs)
 
-```sh
-backend:  http://localhost:3333/docs
-frontend: http://localhost:5173/
-```
