@@ -1,3 +1,14 @@
+-- Model = application state
+--
+-- main -> init
+-- init -> start model ; send msg to browser
+-- view -> build html ; get user actions
+-- update -> get user msg -> update model
+-- subscription -> get msg from ether -> update model
+-- model changed -> view called
+
+
+
 module Main exposing (main)
 
 import Browser
@@ -8,7 +19,7 @@ import Http
 import Json.Encode as Encode
 
 
-main : Program () Link Msg
+main : Program () Model Msg
 main =
     Browser.element
         { init = init
@@ -18,7 +29,7 @@ main =
         }
 
 
-type alias Link =
+type alias Model =
     { originalLink : String
     , shortenedLink : String
     , numberOfAccesses : Int
@@ -26,7 +37,7 @@ type alias Link =
     }
 
 
-init : () -> ( Link, Cmd Msg )
+init : () -> ( Model, Cmd Msg )
 init _ =
     ( { originalLink = ""
       , shortenedLink = ""
@@ -44,7 +55,7 @@ type Msg
     | GotResponse (Result Http.Error String)
 
 
-update : Msg -> Link -> ( Link, Cmd Msg )
+update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         UpdateOriginal val ->
@@ -71,7 +82,7 @@ update msg model =
                     ( { model | status = "Error!" }, Cmd.none )
 
 
-encodeRequest : Link -> Encode.Value
+encodeRequest : Model -> Encode.Value
 encodeRequest model =
     Encode.object
         [ ( "originalLink", Encode.string model.originalLink )
@@ -79,7 +90,8 @@ encodeRequest model =
         ]
 
 
-view : Link -> Html Msg
+-- called when Model is changed
+view : Model -> Html Msg
 view model =
     div []
         [ div []
@@ -104,6 +116,6 @@ view model =
             ]
         , button [ onClick SendCreateRequest ] [ text "Send" ]
         , div [] [ text model.status ]
-        , div [] [ h1 [] [ text "Link List" ] ]
+        , div [] [ h1 [] [ text "Model List" ] ]
         , div [] [ Html.span [] [ text "link"] ]
         ]
