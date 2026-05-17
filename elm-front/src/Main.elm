@@ -11,7 +11,6 @@
 module Main exposing (main)
 
 import Browser
-import Env
 import Html exposing (Html, br, button, div, form, input, text)
 import Html.Attributes exposing (placeholder)
 import Html.Events exposing (onInput, onSubmit)
