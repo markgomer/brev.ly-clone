@@ -11,9 +11,12 @@
 module Main exposing (main)
 
 import Browser
-import Html exposing (Html, br, button, div, input, label, text)
+import Env
+import Html exposing (Html, br, button, div, form, input, text)
 import Html.Attributes exposing (placeholder)
-import Html.Events exposing (onInput)
+import Html.Events exposing (onInput, onSubmit)
+import Http
+import Json.Encode as E
 
 
 main : Program () Model Msg
@@ -24,6 +27,10 @@ main =
         , update = update
         , subscriptions = subscriptions
         }
+
+
+
+-- MODEL
 
 
 type alias Model =
@@ -40,6 +47,14 @@ type alias Link =
     }
 
 
+linkEncoder : String -> String -> E.Value
+linkEncoder originalUrl shortenedUrl =
+    E.object
+        [ ( "originalLink", E.string originalUrl )
+        , ( "shortenedLink", E.string shortenedUrl )
+        ]
+
+
 init : () -> ( Model, Cmd Msg )
 init _ =
     ( Model [] "" "", Cmd.none )
@@ -54,6 +69,7 @@ type Msg
     | OriginalUrlInput String
     | ShortenedUrlInput String
     | CreateLink
+    | GotResponse (Result Http.Error String)
 
 
 handleOriginalUrlInput : String -> Model -> ( Model, Cmd Msg )
@@ -64,6 +80,17 @@ handleOriginalUrlInput input model =
 handleShortenedUrlInput : String -> Model -> ( Model, Cmd Msg )
 handleShortenedUrlInput input model =
     ( { model | shortenedUrlInput = input }, Cmd.none )
+
+
+handleCreateLink : String -> String -> Model -> (Model , Cmd Msg)
+handleCreateLink original short model =
+    ( model
+    , Http.post
+        { body = Http.jsonBody (linkEncoder original short)
+        , expect = Http.expectString GotResponse
+        , url = "http://localhost:3333/shortlinks"
+        }
+    )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -79,6 +106,9 @@ update msg model =
             handleShortenedUrlInput input model
 
         CreateLink ->
+            handleCreateLink model.originalUrlInput model.shortenedUrlInput model
+
+        GotResponse result ->
             ( model, Cmd.none )
 
 
@@ -87,17 +117,22 @@ subscriptions model =
     Sub.none
 
 
+
+-- VIEW
+
+
 view : Model -> Html Msg
 view model =
     let
-        renderModel =
+        dEBUGrenderModel : Html Msg
+        dEBUGrenderModel =
             div []
                 [ text ("OL = " ++ model.originalUrlInput)
                 , br [] []
                 , text ("SL = " ++ model.shortenedUrlInput)
                 ]
     in
-    div []
+    form [ onSubmit CreateLink ]
         [ div []
             [ text "Original Link" ]
         , div []
@@ -107,5 +142,5 @@ view model =
         , div []
             [ input [ placeholder "brev.ly/", onInput ShortenedUrlInput ] [] ]
         , button [] [ text "Create" ]
-        , renderModel
+        , dEBUGrenderModel
         ]
