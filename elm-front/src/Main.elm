@@ -81,7 +81,7 @@ handleShortenedUrlInput input model =
     ( { model | shortenedUrlInput = input }, Cmd.none )
 
 
-handleCreateLink : String -> String -> Model -> (Model , Cmd Msg)
+handleCreateLink : String -> String -> Model -> ( Model, Cmd Msg )
 handleCreateLink original short model =
     ( model
     , Http.post
