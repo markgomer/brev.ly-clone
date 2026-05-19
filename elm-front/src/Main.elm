@@ -54,15 +54,6 @@ type Status
     | Loading
 
 
-type Msg
-    = OriginalUrlInput String
-    | ShortenedUrlInput String
-    | GetLinks
-    | LinkListGotten (Result Http.Error (List Link))
-    | CreateLink
-    | LinkCreatedResponse (Result Http.Error String)
-
-
 linkEncoder : String -> String -> E.Value
 linkEncoder originalUrl shortenedUrl =
     E.object
@@ -93,11 +84,78 @@ init _ =
 -- UPDATE
 
 
+type IncomingMsg
+    = LinkListGotten (Result Http.Error (List Link))
+    | LinkCreatedResponse (Result Http.Error String)
+
+
+type OutgoingMsg
+    = CreateLink
+    | GetLinks
+
+
+type InternalMsg
+    = OriginalUrlInput String
+    | ShortenedUrlInput String
+
+
+type Msg
+    = InternalMsg InternalMsg
+    | OutgoingMsg OutgoingMsg
+    | IncomingMsg IncomingMsg
+
+
+update : Msg -> Model -> ( Model, Cmd Msg )
+update msg model =
+    case msg of
+        IncomingMsg incomingMsg ->
+            handleIncomingMsg incomingMsg model
+
+        OutgoingMsg outgoingMsg ->
+            handleOutgoingMsg outgoingMsg model
+
+        InternalMsg internalMsg ->
+            handleInternalMsg internalMsg model
+
+
+handleIncomingMsg : IncomingMsg -> Model -> ( Model, Cmd Msg )
+handleIncomingMsg incomingMsg model =
+    case incomingMsg of
+        LinkListGotten result ->
+            handleGottenLinks result model
+
+        LinkCreatedResponse result ->
+            handleLinkCreatedResponse result model
+
+
+handleOutgoingMsg : OutgoingMsg -> Model -> ( Model, Cmd Msg )
+handleOutgoingMsg outMsg model =
+    case outMsg of
+        GetLinks ->
+            handleGetLinks model
+
+        CreateLink ->
+            handleCreateLink
+                model.originalUrlInput
+                model.shortenedUrlInput
+                model
+
+
+handleInternalMsg : InternalMsg -> Model -> ( Model, Cmd Msg )
+handleInternalMsg msg model =
+    case msg of
+        OriginalUrlInput input ->
+            ( { model | originalUrlInput = input }, Cmd.none )
+
+        ShortenedUrlInput input ->
+            ( { model | shortenedUrlInput = input }, Cmd.none )
+
+
 handleGetLinks : Model -> ( Model, Cmd Msg )
 handleGetLinks model =
     ( { model | status = Loading }
     , Http.get
-        { expect = Http.expectJson LinkListGotten linkListDecoder
+        { expect = Http.expectJson (IncomingMsg << LinkListGotten) linkListDecoder
         , url = "http://localhost:3333/shortlinks"
         }
     )
@@ -132,16 +190,6 @@ httpErrorToString errMsg =
             "Bad body: " ++ body
 
 
-handleOriginalUrlInput : String -> Model -> ( Model, Cmd Msg )
-handleOriginalUrlInput input model =
-    ( { model | originalUrlInput = input }, Cmd.none )
-
-
-handleShortenedUrlInput : String -> Model -> ( Model, Cmd Msg )
-handleShortenedUrlInput input model =
-    ( { model | shortenedUrlInput = input }, Cmd.none )
-
-
 handleCreateLink : String -> String -> Model -> ( Model, Cmd Msg )
 handleCreateLink original short model =
     let
@@ -155,7 +203,7 @@ handleCreateLink original short model =
     ( { model | status = Loading }
     , Http.post
         { body = Http.jsonBody (linkEncoder fullOriginal short)
-        , expect = Http.expectString LinkCreatedResponse
+        , expect = Http.expectString (IncomingMsg << LinkCreatedResponse)
         , url = "http://localhost:3333/shortlinks"
         }
     )
@@ -173,28 +221,6 @@ handleLinkCreatedResponse result model =
 
         Err errMsg ->
             ( { model | status = Error (httpErrorToString errMsg) }, Cmd.none )
-
-
-update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
-    case msg of
-        GetLinks ->
-            handleGetLinks model
-
-        LinkListGotten result ->
-            handleGottenLinks result model
-
-        OriginalUrlInput input ->
-            handleOriginalUrlInput input model
-
-        ShortenedUrlInput input ->
-            handleShortenedUrlInput input model
-
-        CreateLink ->
-            handleCreateLink model.originalUrlInput model.shortenedUrlInput model
-
-        LinkCreatedResponse result ->
-            handleLinkCreatedResponse result model
 
 
 subscriptions : Model -> Sub Msg
@@ -243,13 +269,13 @@ view model =
                 Error errorMsg ->
                     div [] [ text errorMsg ]
     in
-    form [ onSubmit CreateLink ]
+    form [ onSubmit (OutgoingMsg CreateLink) ]
         [ div []
             [ text "Original Link" ]
         , div []
             [ input
                 [ placeholder "https://"
-                , onInput OriginalUrlInput
+                , onInput (InternalMsg << OriginalUrlInput)
                 , value model.originalUrlInput
                 ]
                 []
@@ -259,7 +285,7 @@ view model =
         , div []
             [ input
                 [ placeholder "brev.ly/"
-                , onInput ShortenedUrlInput
+                , onInput (InternalMsg << ShortenedUrlInput)
                 , value model.shortenedUrlInput
                 ]
                 []
