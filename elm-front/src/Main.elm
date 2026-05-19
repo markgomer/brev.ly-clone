@@ -12,7 +12,7 @@ module Main exposing (main)
 
 import Browser
 import Html exposing (Html, br, button, div, form, input, text)
-import Html.Attributes exposing (placeholder)
+import Html.Attributes exposing (placeholder, value)
 import Html.Events exposing (onInput, onSubmit)
 import Http exposing (Error)
 import Json.Decode as D
@@ -110,30 +110,31 @@ handleGottenLinks result model =
             ( { model | links = linkList, status = Success }, Cmd.none )
 
         Err errMsg ->
-            let
-                msg =
-                    case errMsg of
-                        Http.BadUrl url ->
-                            "Bad URL: " ++ url
+            ( { model | status = Error (httpErrorToString errMsg) }, Cmd.none )
 
-                        Http.Timeout ->
-                            "Request timed out"
 
-                        Http.NetworkError ->
-                            "Network error"
+httpErrorToString : Http.Error -> String
+httpErrorToString errMsg =
+    case errMsg of
+        Http.BadUrl url ->
+            "Bad URL: " ++ url
 
-                        Http.BadStatus code ->
-                            "Server error: " ++ String.fromInt code
+        Http.Timeout ->
+            "Request timed out"
 
-                        Http.BadBody body ->
-                            "Bad body: " ++ body
-            in
-            ( { model | status = Error msg }, Cmd.none )
+        Http.NetworkError ->
+            "Network error"
+
+        Http.BadStatus code ->
+            "Server error: " ++ String.fromInt code
+
+        Http.BadBody body ->
+            "Bad body: " ++ body
 
 
 handleOriginalUrlInput : String -> Model -> ( Model, Cmd Msg )
 handleOriginalUrlInput input model =
-    ( { model | originalUrlInput = "https://" ++ input }, Cmd.none )
+    ( { model | originalUrlInput = input }, Cmd.none )
 
 
 handleShortenedUrlInput : String -> Model -> ( Model, Cmd Msg )
@@ -143,13 +144,35 @@ handleShortenedUrlInput input model =
 
 handleCreateLink : String -> String -> Model -> ( Model, Cmd Msg )
 handleCreateLink original short model =
-    ( { model | status = Success }
+    let
+        fullOriginal =
+            if String.startsWith "http://" original || String.startsWith "https://" original then
+                original
+
+            else
+                "https://" ++ original
+    in
+    ( { model | status = Loading }
     , Http.post
-        { body = Http.jsonBody (linkEncoder original short)
+        { body = Http.jsonBody (linkEncoder fullOriginal short)
         , expect = Http.expectString LinkCreatedResponse
         , url = "http://localhost:3333/shortlinks"
         }
     )
+
+
+handleLinkCreatedResponse : Result Http.Error String -> Model -> ( Model, Cmd Msg )
+handleLinkCreatedResponse result model =
+    case result of
+        Ok _ ->
+            let
+                ( newModel, cmd ) =
+                    handleGetLinks model
+            in
+            ( { newModel | status = Success, originalUrlInput = "", shortenedUrlInput = "" }, cmd )
+
+        Err errMsg ->
+            ( { model | status = Error (httpErrorToString errMsg) }, Cmd.none )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -171,7 +194,7 @@ update msg model =
             handleCreateLink model.originalUrlInput model.shortenedUrlInput model
 
         LinkCreatedResponse result ->
-            ( { model | status = Success }, Cmd.none )
+            handleLinkCreatedResponse result model
 
 
 subscriptions : Model -> Sub Msg
@@ -186,24 +209,15 @@ subscriptions model =
 renderLinkCard : Link -> Html Msg
 renderLinkCard link =
     div []
-        [ text link.shortenedUrl
-        , text link.originalUrl
-        , text (String.fromInt link.numberOfAccesses)
+        [ text (link.shortenedUrl ++ " -> ")
+        , text (link.originalUrl ++ " -> ")
+        , text (String.fromInt link.numberOfAccesses ++ " acessos")
         ]
 
 
 renderLinkList : Model -> Html Msg
 renderLinkList model =
-    case model.status of
-        Loading ->
-            div [] [ text "Loading" ]
-
-        Success ->
-            div []
-                [ div [] (List.map renderLinkCard model.links) ]
-
-        Error errorMsg ->
-            div [] [ text errorMsg ]
+    div [] (List.map renderLinkCard model.links)
 
 
 view : Model -> Html Msg
@@ -216,26 +230,40 @@ view model =
                 , br [] []
                 , text ("SL = " ++ model.shortenedUrlInput)
                 ]
+
         renderStatus : Html Msg
         renderStatus =
             case model.status of
                 Loading ->
-                    div [] [ text "Loading"]
+                    div [] [ text "Loading" ]
+
                 Success ->
-                    div [] [ text "List Loaded"]
+                    div [] [ text "List Loaded" ]
+
                 Error errorMsg ->
                     div [] [ text errorMsg ]
-
     in
     form [ onSubmit CreateLink ]
         [ div []
             [ text "Original Link" ]
         , div []
-            [ input [ placeholder "https://", onInput OriginalUrlInput ] [] ]
+            [ input
+                [ placeholder "https://"
+                , onInput OriginalUrlInput
+                , value model.originalUrlInput
+                ]
+                []
+            ]
         , div []
             [ text "Your Shortened Link" ]
         , div []
-            [ input [ placeholder "brev.ly/", onInput ShortenedUrlInput ] [] ]
+            [ input
+                [ placeholder "brev.ly/"
+                , onInput ShortenedUrlInput
+                , value model.shortenedUrlInput
+                ]
+                []
+            ]
         , button [] [ text "Create" ]
         , renderStatus
         , renderLinkList model
