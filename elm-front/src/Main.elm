@@ -86,8 +86,7 @@ init _ =
 
 type IncomingMsg
     = LinkListGotten (Result Http.Error (List Link))
-    | LinkCreatedResponse (Result Http.Error String)
-    | LinkDeletedResponse (Result Http.Error String)
+    | StringResponse (Result Http.Error String)
 
 
 type OutgoingMsg
@@ -126,11 +125,8 @@ handleIncomingMsg incomingMsg model =
         LinkListGotten result ->
             handleGottenLinks result model
 
-        LinkCreatedResponse result ->
-            handleLinkCreatedResponse result model
-
-        LinkDeletedResponse result ->
-            handleDeleteResponse result model
+        StringResponse result ->
+            handleStringResponse result model
 
 
 handleOutgoingMsg : OutgoingMsg -> Model -> ( Model, Cmd Msg )
@@ -211,14 +207,14 @@ handleCreateLink original short model =
     ( { model | status = Loading }
     , Http.post
         { body = Http.jsonBody (linkEncoder fullOriginal short)
-        , expect = Http.expectString (IncomingMsg << LinkCreatedResponse)
+        , expect = Http.expectString (IncomingMsg << StringResponse)
         , url = "http://localhost:3333/shortlinks"
         }
     )
 
 
-handleLinkCreatedResponse : Result Http.Error String -> Model -> ( Model, Cmd Msg )
-handleLinkCreatedResponse result model =
+handleStringResponse : Result Http.Error String -> Model -> ( Model, Cmd Msg )
+handleStringResponse result model =
     case result of
         Ok _ ->
             let
@@ -236,7 +232,7 @@ handleDeleteLink short model =
     ( { model | status = Loading }
     , Http.request
         { body = Http.emptyBody
-        , expect = Http.expectString (IncomingMsg << LinkCreatedResponse)
+        , expect = Http.expectString (IncomingMsg << StringResponse)
         , headers = []
         , url = "http://localhost:3333/shortlinks/" ++ short
         , method = "DELETE"
@@ -244,20 +240,6 @@ handleDeleteLink short model =
         , tracker = Nothing
         }
     )
-
-
-handleDeleteResponse : Result Http.Error String -> Model -> ( Model, Cmd Msg )
-handleDeleteResponse result model =
-    case result of
-        Ok _ ->
-            let
-                ( newModel, cmd ) =
-                    handleGetLinks model
-            in
-            ( { newModel | status = Success, originalUrlInput = "", shortenedUrlInput = "" }, cmd )
-
-        Err errMsg ->
-            ( { model | status = Error (httpErrorToString errMsg) }, Cmd.none )
 
 
 
