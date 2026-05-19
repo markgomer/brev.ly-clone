@@ -13,7 +13,7 @@ module Main exposing (main)
 import Browser
 import Html exposing (Html, br, button, div, form, input, text)
 import Html.Attributes exposing (placeholder, value)
-import Html.Events exposing (onInput, onSubmit)
+import Html.Events exposing (onClick, onInput, onSubmit)
 import Http exposing (Error)
 import Json.Decode as D
 import Json.Encode as E
@@ -87,11 +87,13 @@ init _ =
 type IncomingMsg
     = LinkListGotten (Result Http.Error (List Link))
     | LinkCreatedResponse (Result Http.Error String)
+    | LinkDeletedResponse (Result Http.Error String)
 
 
 type OutgoingMsg
     = CreateLink
     | GetLinks
+    | DeleteLink String
 
 
 type InternalMsg
@@ -127,6 +129,9 @@ handleIncomingMsg incomingMsg model =
         LinkCreatedResponse result ->
             handleLinkCreatedResponse result model
 
+        LinkDeletedResponse result ->
+            handleDeleteResponse result model
+
 
 handleOutgoingMsg : OutgoingMsg -> Model -> ( Model, Cmd Msg )
 handleOutgoingMsg outMsg model =
@@ -139,6 +144,9 @@ handleOutgoingMsg outMsg model =
                 model.originalUrlInput
                 model.shortenedUrlInput
                 model
+
+        DeleteLink short ->
+            handleDeleteLink short model
 
 
 handleInternalMsg : InternalMsg -> Model -> ( Model, Cmd Msg )
@@ -223,8 +231,41 @@ handleLinkCreatedResponse result model =
             ( { model | status = Error (httpErrorToString errMsg) }, Cmd.none )
 
 
+handleDeleteLink : String -> Model -> ( Model, Cmd Msg )
+handleDeleteLink short model =
+    ( { model | status = Loading }
+    , Http.request
+        { body = Http.emptyBody
+        , expect = Http.expectString (IncomingMsg << LinkCreatedResponse)
+        , headers = []
+        , url = "http://localhost:3333/shortlinks/" ++ short
+        , method = "DELETE"
+        , timeout = Nothing
+        , tracker = Nothing
+        }
+    )
+
+
+handleDeleteResponse : Result Http.Error String -> Model -> ( Model, Cmd Msg )
+handleDeleteResponse result model =
+    case result of
+        Ok _ ->
+            let
+                ( newModel, cmd ) =
+                    handleGetLinks model
+            in
+            ( { newModel | status = Success, originalUrlInput = "", shortenedUrlInput = "" }, cmd )
+
+        Err errMsg ->
+            ( { model | status = Error (httpErrorToString errMsg) }, Cmd.none )
+
+
+
+-- SUBSCRIPTIONS
+
+
 subscriptions : Model -> Sub Msg
-subscriptions model =
+subscriptions _ =
     Sub.none
 
 
@@ -238,6 +279,8 @@ renderLinkCard link =
         [ text (link.shortenedUrl ++ " -> ")
         , text (link.originalUrl ++ " -> ")
         , text (String.fromInt link.numberOfAccesses ++ " acessos")
+        , button [ onClick (OutgoingMsg (DeleteLink link.shortenedUrl)) ]
+            [ text "x" ]
         ]
 
 
@@ -269,28 +312,30 @@ view model =
                 Error errorMsg ->
                     div [] [ text errorMsg ]
     in
-    form [ onSubmit (OutgoingMsg CreateLink) ]
-        [ div []
-            [ text "Original Link" ]
-        , div []
-            [ input
-                [ placeholder "https://"
-                , onInput (InternalMsg << OriginalUrlInput)
-                , value model.originalUrlInput
+    div []
+        [ form [ onSubmit (OutgoingMsg CreateLink) ]
+            [ div []
+                [ text "Original Link" ]
+            , div []
+                [ input
+                    [ placeholder "https://"
+                    , onInput (InternalMsg << OriginalUrlInput)
+                    , value model.originalUrlInput
+                    ]
+                    []
                 ]
-                []
-            ]
-        , div []
-            [ text "Your Shortened Link" ]
-        , div []
-            [ input
-                [ placeholder "brev.ly/"
-                , onInput (InternalMsg << ShortenedUrlInput)
-                , value model.shortenedUrlInput
+            , div []
+                [ text "Your Shortened Link" ]
+            , div []
+                [ input
+                    [ placeholder "brev.ly/"
+                    , onInput (InternalMsg << ShortenedUrlInput)
+                    , value model.shortenedUrlInput
+                    ]
+                    []
                 ]
-                []
+            , button [] [ text "Create" ]
             ]
-        , button [] [ text "Create" ]
         , renderStatus
         , renderLinkList model
         , dEBUGrenderModel
