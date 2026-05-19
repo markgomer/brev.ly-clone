@@ -11,8 +11,8 @@
 module Main exposing (main)
 
 import Browser
-import Html exposing (Html, br, button, div, form, input, text)
-import Html.Attributes exposing (placeholder, value)
+import Html exposing (Html, a, button, div, form, input, text)
+import Html.Attributes exposing (class, href, placeholder, rel, target, value)
 import Html.Events exposing (onClick, onInput, onSubmit)
 import Http exposing (Error)
 import Json.Decode as D
@@ -258,8 +258,14 @@ subscriptions _ =
 renderLinkCard : Link -> Html Msg
 renderLinkCard link =
     div []
-        [ text (link.shortenedUrl ++ " -> ")
-        , text (link.originalUrl ++ " -> ")
+        [ a
+            [ href ("http://localhost:3333/" ++ link.shortenedUrl)
+            , target "_blank"
+            , rel "noreferrer"
+            , class "link"
+            ]
+            [ text link.shortenedUrl ]
+        , text (" -> " ++ link.originalUrl ++ " -> ")
         , text (String.fromInt link.numberOfAccesses ++ " acessos")
         , button [ onClick (OutgoingMsg (DeleteLink link.shortenedUrl)) ]
             [ text "x" ]
@@ -274,14 +280,6 @@ renderLinkList model =
 view : Model -> Html Msg
 view model =
     let
-        dEBUGrenderModel : Html Msg
-        dEBUGrenderModel =
-            div []
-                [ text ("OL = " ++ model.originalUrlInput)
-                , br [] []
-                , text ("SL = " ++ model.shortenedUrlInput)
-                ]
-
         renderStatus : Html Msg
         renderStatus =
             case model.status of
@@ -293,32 +291,35 @@ view model =
 
                 Error errorMsg ->
                     div [] [ text errorMsg ]
+
+        renderForm : Html Msg
+        renderForm =
+            form [ onSubmit (OutgoingMsg CreateLink) ]
+                [ div []
+                    [ text "Original Link" ]
+                , div []
+                    [ input
+                        [ placeholder "https://"
+                        , onInput (InternalMsg << OriginalUrlInput)
+                        , value model.originalUrlInput
+                        ]
+                        []
+                    ]
+                , div []
+                    [ text "Your Shortened Link" ]
+                , div []
+                    [ input
+                        [ placeholder "brev.ly/"
+                        , onInput (InternalMsg << ShortenedUrlInput)
+                        , value model.shortenedUrlInput
+                        ]
+                        []
+                    ]
+                , button [] [ text "Create" ]
+                ]
     in
     div []
-        [ form [ onSubmit (OutgoingMsg CreateLink) ]
-            [ div []
-                [ text "Original Link" ]
-            , div []
-                [ input
-                    [ placeholder "https://"
-                    , onInput (InternalMsg << OriginalUrlInput)
-                    , value model.originalUrlInput
-                    ]
-                    []
-                ]
-            , div []
-                [ text "Your Shortened Link" ]
-            , div []
-                [ input
-                    [ placeholder "brev.ly/"
-                    , onInput (InternalMsg << ShortenedUrlInput)
-                    , value model.shortenedUrlInput
-                    ]
-                    []
-                ]
-            , button [] [ text "Create" ]
-            ]
+        [ renderForm
         , renderStatus
         , renderLinkList model
-        , dEBUGrenderModel
         ]
