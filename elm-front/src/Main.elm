@@ -8,16 +8,16 @@
 -- model changed -> view called
 
 
-module Main exposing (main)
+module Main exposing (main, Msg(..), OutgoingMsg(..))
 
 import Browser
-import Html exposing (Html, a, button, div, form, input, text)
-import Html.Attributes exposing (class, href, placeholder, rel, target, value)
-import Html.Events exposing (onClick, onInput, onSubmit)
+import Html exposing (Html, button, div, form, input, text)
+import Html.Attributes exposing (placeholder, value)
+import Html.Events exposing (onInput, onSubmit)
 import Http exposing (Error)
-import Json.Decode as D
-import Json.Encode as E
 
+import Data exposing (Model, Link, Status(..), linkEncoder, linkListDecoder)
+import LinkListView
 
 main : Program () Model Msg
 main =
@@ -28,51 +28,6 @@ main =
         , subscriptions = subscriptions
         }
 
-
-
--- MODEL
-
-
-type alias Model =
-    { links : List Link
-    , originalUrlInput : String
-    , shortenedUrlInput : String
-    , status : Status
-    }
-
-
-type alias Link =
-    { originalUrl : String
-    , shortenedUrl : String
-    , numberOfAccesses : Int
-    }
-
-
-type Status
-    = Success
-    | Error String
-    | Loading
-
-
-linkEncoder : String -> String -> E.Value
-linkEncoder originalUrl shortenedUrl =
-    E.object
-        [ ( "originalLink", E.string originalUrl )
-        , ( "shortenedLink", E.string shortenedUrl )
-        ]
-
-
-linkListDecoder : D.Decoder (List Link)
-linkListDecoder =
-    D.list linkDecoder
-
-
-linkDecoder : D.Decoder Link
-linkDecoder =
-    D.map3 Link
-        (D.field "originalURL" D.string)
-        (D.field "shortenedURL" D.string)
-        (D.field "numberOfAccesses" D.int)
 
 
 init : () -> ( Model, Cmd Msg )
@@ -255,28 +210,6 @@ subscriptions _ =
 -- VIEW
 
 
-renderLinkCard : Link -> Html Msg
-renderLinkCard link =
-    div []
-        [ a
-            [ href ("http://localhost:3333/" ++ link.shortenedUrl)
-            , target "_blank"
-            , rel "noreferrer"
-            , class "link"
-            ]
-            [ text link.shortenedUrl ]
-        , text (" -> " ++ link.originalUrl ++ " -> ")
-        , text (String.fromInt link.numberOfAccesses ++ " acessos")
-        , button [ onClick (OutgoingMsg (DeleteLink link.shortenedUrl)) ]
-            [ text "x" ]
-        ]
-
-
-renderLinkList : Model -> Html Msg
-renderLinkList model =
-    div [] (List.map renderLinkCard model.links)
-
-
 view : Model -> Html Msg
 view model =
     let
@@ -321,5 +254,5 @@ view model =
     div []
         [ renderForm
         , renderStatus
-        , renderLinkList model
+        , LinkListView.renderLinkList (\slug -> OutgoingMsg (DeleteLink slug)) model
         ]
