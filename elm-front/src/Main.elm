@@ -1,22 +1,11 @@
--- Model = application state
---
--- main -> init
--- init -> start model ; send msg to browser
--- view -> build html ; get user actions
--- update -> get user msg -> update model
--- subscription -> get msg from ether -> update model
--- model changed -> view called
-
-
-module Main exposing (Msg(..), OutgoingMsg(..), main)
+port module Main exposing (Msg(..), OutgoingMsg(..), main)
 
 import Browser
-import Data exposing (Link, Model, Status(..), linkEncoder, linkListDecoder)
-import Html exposing (Html, button, div, form, input, text)
-import Html.Attributes exposing (placeholder, value)
-import Html.Events exposing (onInput, onSubmit)
-import Http exposing (Error)
-import LinkListView
+import Controller
+import Data exposing (Link, Model, Page(..), Status(..))
+import Html exposing (Html)
+import Http
+import View
 
 
 main : Program () Model Msg
@@ -31,7 +20,14 @@ main =
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    handleGetLinks (Model [] "" "" Loading)
+    Controller.getLinks (IncomingMsg << LinkListGotten) (Model [] "" "" Loading Home)
+
+
+
+-- PORTS
+
+
+port redirect : String -> Cmd msg
 
 
 
@@ -52,6 +48,8 @@ type OutgoingMsg
 type InternalMsg
     = OriginalUrlInput String
     | ShortenedUrlInput String
+    | GoToRedirectPage String
+    | GoToHome
 
 
 type Msg
@@ -64,136 +62,49 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         IncomingMsg incomingMsg ->
-            handleIncomingMsg incomingMsg model
+            case incomingMsg of
+                LinkListGotten result ->
+                    Controller.handleGottenLinks result model
+
+                StringResponse result ->
+                    Controller.handleStringResponse (IncomingMsg << LinkListGotten) result model
 
         OutgoingMsg outgoingMsg ->
-            handleOutgoingMsg outgoingMsg model
+            case outgoingMsg of
+                GetLinks ->
+                    Controller.getLinks (IncomingMsg << LinkListGotten) model
+
+                CreateLink ->
+                    Controller.createLink
+                        (IncomingMsg << StringResponse)
+                        model.originalUrlInput
+                        model.shortenedUrlInput
+                        model
+
+                DeleteLink short ->
+                    Controller.deleteLink
+                        (IncomingMsg << StringResponse)
+                        short
+                        model
 
         InternalMsg internalMsg ->
-            handleInternalMsg internalMsg model
+            case internalMsg of
+                OriginalUrlInput input ->
+                    Controller.handleOriginalUrlInput input model
 
+                ShortenedUrlInput input ->
+                    Controller.handleShortenedUrlInput input model
 
-handleIncomingMsg : IncomingMsg -> Model -> ( Model, Cmd Msg )
-handleIncomingMsg incomingMsg model =
-    case incomingMsg of
-        LinkListGotten result ->
-            handleGottenLinks result model
+                GoToRedirectPage slug ->
+                    ( { model | page = RedirectPage slug }
+                      -- we send the slug to the JS port, so it will do the redirection
+                    , redirect slug
+                    )
 
-        StringResponse result ->
-            handleStringResponse result model
-
-
-handleOutgoingMsg : OutgoingMsg -> Model -> ( Model, Cmd Msg )
-handleOutgoingMsg outMsg model =
-    case outMsg of
-        GetLinks ->
-            handleGetLinks model
-
-        CreateLink ->
-            handleCreateLink
-                model.originalUrlInput
-                model.shortenedUrlInput
-                model
-
-        DeleteLink short ->
-            handleDeleteLink short model
-
-
-handleInternalMsg : InternalMsg -> Model -> ( Model, Cmd Msg )
-handleInternalMsg msg model =
-    case msg of
-        OriginalUrlInput input ->
-            ( { model | originalUrlInput = input }, Cmd.none )
-
-        ShortenedUrlInput input ->
-            ( { model | shortenedUrlInput = input }, Cmd.none )
-
-
-handleGetLinks : Model -> ( Model, Cmd Msg )
-handleGetLinks model =
-    ( { model | status = Loading }
-    , Http.get
-        { expect = Http.expectJson (IncomingMsg << LinkListGotten) linkListDecoder
-        , url = "http://localhost:3333/shortlinks"
-        }
-    )
-
-
-handleGottenLinks : Result Http.Error (List Link) -> Model -> ( Model, Cmd Msg )
-handleGottenLinks result model =
-    case result of
-        Ok linkList ->
-            ( { model | links = linkList, status = Success }, Cmd.none )
-
-        Err errMsg ->
-            ( { model | status = Error (httpErrorToString errMsg) }, Cmd.none )
-
-
-httpErrorToString : Http.Error -> String
-httpErrorToString errMsg =
-    case errMsg of
-        Http.BadUrl url ->
-            "Bad URL: " ++ url
-
-        Http.Timeout ->
-            "Request timed out"
-
-        Http.NetworkError ->
-            "Network error"
-
-        Http.BadStatus code ->
-            "Server error: " ++ String.fromInt code
-
-        Http.BadBody body ->
-            "Bad body: " ++ body
-
-
-handleCreateLink : String -> String -> Model -> ( Model, Cmd Msg )
-handleCreateLink original short model =
-    let
-        fullOriginal =
-            if String.startsWith "http://" original || String.startsWith "https://" original then
-                original
-
-            else
-                "https://" ++ original
-    in
-    ( { model | status = Loading }
-    , Http.post
-        { body = Http.jsonBody (linkEncoder fullOriginal short)
-        , expect = Http.expectString (IncomingMsg << StringResponse)
-        , url = "http://localhost:3333/shortlinks"
-        }
-    )
-
-
-handleStringResponse : Result Http.Error String -> Model -> ( Model, Cmd Msg )
-handleStringResponse result model =
-    case result of
-        Ok _ ->
-            let
-                ( newModel, cmd ) =
-                    handleGetLinks model
-            in
-            ( { newModel | status = Success, originalUrlInput = "", shortenedUrlInput = "" }, cmd )
-
-        Err errMsg ->
-            ( { model | status = Error (httpErrorToString errMsg) }, Cmd.none )
-
-
-handleDeleteLink : String -> Model -> ( Model, Cmd Msg )
-handleDeleteLink short model =
-    ( { model | status = Loading }
-    , Http.request
-        { body = Http.emptyBody
-        , expect = Http.expectString (IncomingMsg << StringResponse)
-        , headers = []
-        , url = "http://localhost:3333/shortlinks/" ++ short
-        , method = "DELETE"
-        , timeout = Nothing
-        , tracker = Nothing
-        }
-    )
+                GoToHome ->
+                    Controller.getLinks
+                        (IncomingMsg << LinkListGotten)
+                        { model | page = Home }
 
 
 
@@ -211,51 +122,12 @@ subscriptions _ =
 
 view : Model -> Html Msg
 view model =
-    let
-        renderStatus : Html Msg
-        renderStatus =
-            case model.status of
-                Loading ->
-                    div [] [ text "Loading" ]
-
-                Success ->
-                    div [] [ text "List Loaded" ]
-
-                Error errorMsg ->
-                    div [] [ text errorMsg ]
-
-        renderForm : Html Msg
-        renderForm =
-            form [ onSubmit (OutgoingMsg CreateLink) ]
-                [ div []
-                    [ text "Original Link" ]
-                , div []
-                    [ input
-                        [ placeholder "https://"
-                        , onInput (InternalMsg << OriginalUrlInput)
-                        , value model.originalUrlInput
-                        ]
-                        []
-                    ]
-                , div []
-                    [ text "Your Shortened Link" ]
-                , div []
-                    [ input
-                        [ placeholder "brev.ly/"
-                        , onInput (InternalMsg << ShortenedUrlInput)
-                        , value model.shortenedUrlInput
-                        ]
-                        []
-                    ]
-                , button [] [ text "Create" ]
-                ]
-    in
-    div []
-        [ renderForm
-        , renderStatus
-        , LinkListView.renderLinkList
-            -- This is a fn that turns a string into a Msg.
-            -- In this case, we're building the message to delete a link.
-            (\strToDelMsg -> OutgoingMsg (DeleteLink strToDelMsg))
-            model
-        ]
+    View.view
+        { originalUrlInput = InternalMsg << OriginalUrlInput
+        , shortenedUrlInput = InternalMsg << ShortenedUrlInput
+        , createLink = OutgoingMsg CreateLink
+        , deleteLink = OutgoingMsg << DeleteLink
+        , goToRedirect = InternalMsg << GoToRedirectPage
+        , goToHome = InternalMsg GoToHome
+        }
+        model

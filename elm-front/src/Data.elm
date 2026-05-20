@@ -1,4 +1,4 @@
-module Data exposing (Model, Link, Status(..), linkEncoder, linkListDecoder)
+module Data exposing (Link, Model, Page(..), Status(..), linkEncoder, linkListDecoder)
 
 import Json.Decode as D
 import Json.Encode as E
@@ -6,11 +6,17 @@ import Json.Encode as E
 -- MODEL
 
 
+type Page
+    = Home
+    | RedirectPage String
+
+
 type alias Model =
     { links : List Link
     , originalUrlInput : String
     , shortenedUrlInput : String
     , status : Status
+    , page : Page
     }
 
 
