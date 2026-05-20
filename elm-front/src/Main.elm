@@ -8,16 +8,16 @@
 -- model changed -> view called
 
 
-module Main exposing (main, Msg(..), OutgoingMsg(..))
+module Main exposing (Msg(..), OutgoingMsg(..), main)
 
 import Browser
+import Data exposing (Link, Model, Status(..), linkEncoder, linkListDecoder)
 import Html exposing (Html, button, div, form, input, text)
 import Html.Attributes exposing (placeholder, value)
 import Html.Events exposing (onInput, onSubmit)
 import Http exposing (Error)
-
-import Data exposing (Model, Link, Status(..), linkEncoder, linkListDecoder)
 import LinkListView
+
 
 main : Program () Model Msg
 main =
@@ -27,7 +27,6 @@ main =
         , update = update
         , subscriptions = subscriptions
         }
-
 
 
 init : () -> ( Model, Cmd Msg )
@@ -254,5 +253,9 @@ view model =
     div []
         [ renderForm
         , renderStatus
-        , LinkListView.renderLinkList (\slug -> OutgoingMsg (DeleteLink slug)) model
+        , LinkListView.renderLinkList
+            -- This is a fn that turns a string into a Msg.
+            -- In this case, we're building the message to delete a link.
+            (\strToDelMsg -> OutgoingMsg (DeleteLink strToDelMsg))
+            model
         ]
